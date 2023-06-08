@@ -73,7 +73,7 @@ Item {
     }
 
     function action_syncPanels() {
-        executable.exec("python '../code/core.py'");
+        executable.exec("../code/panel_updater");
     }
 
     function initActions() {
