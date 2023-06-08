@@ -12,6 +12,11 @@
       <default>-1</default>
     </entry>
 
+    <entry name="hiddenMode" type="Bool">
+      <label>Hide instead of a Seperator</label>
+      <default>false</default>
+    </entry>    
+
     <entry name="allDisplays" type="Bool">
       <label>Show on All Displays</label>
     </entry>

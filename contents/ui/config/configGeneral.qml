@@ -15,10 +15,16 @@ Kirigami.FormLayout {
     height: childrenRect.height
 
     property alias cfg_allDisplays: allDisplays.checked
+    property alias cfg_hiddenMode: hiddenMode.checked
 
     QtControls.CheckBox {
         id: allDisplays
         Kirigami.FormData.label: i18n("Show on all Displays:")
+        visible: plasmoid.configuration.identifier == "-1" ? true : false
+    }
+    QtControls.CheckBox {
+        id: hiddenMode
+        Kirigami.FormData.label: i18n("Hide Panel Divider")
         visible: plasmoid.configuration.identifier == "-1" ? true : false
     }
 

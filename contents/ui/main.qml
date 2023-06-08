@@ -18,10 +18,6 @@ Item {
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.ConfigurableBackground
     property bool horizontal: plasmoid.formFactor !== PlasmaCore.Types.Vertical
-    
-
-    //property int length_x: Plasmoid.editMode ? label.contentWidth + 10 * units.devicePixelRatio : 3 * units.devicePixelRatio
-    //property int length_y: Plasmoid.editMode ? label.contentHeight + 10 * units.devicePixelRatio : 3 * units.devicePixelRatio
 
     property string labelText: plasmoid.configuration.identifier == "-1" ? "root" : plasmoid.configuration.identifier
     property string labelBG: plasmoid.configuration.identifier == "-1" ? "black" : "white"
@@ -57,7 +53,7 @@ Item {
             width: horizontal ? (1 * units.devicePixelRatio) : (root.width + 20 * units.devicePixelRatio)
             height: horizontal ? (root.height + 20 * units.devicePixelRatio) : (1 * units.devicePixelRatio)
             border.width: 1 * units.devicePixelRatio
-            opacity: Plasmoid.editMode ? 0.0 : 1.0
+            opacity: Plasmoid.configuration.hiddenMode ? 0.0 : Plasmoid.editMode ? 0.0 : 1.0
         }
     }
 
@@ -73,7 +69,7 @@ Item {
     }
 
     function action_syncPanels() {
-        executable.exec("../code/panel_updater");
+        executable.exec("'../code/panel_updater'");
     }
 
     function initActions() {
