@@ -3,9 +3,7 @@ import json
 import sys
 import pyperclip as pc
 from collections.abc import MutableMapping
-from configparser import (ConfigParser, MissingSectionHeaderError,
-                          ParsingError, DEFAULTSECT)
-
+from configparser import (ConfigParser, MissingSectionHeaderError, ParsingError, DEFAULTSECT)
 
 class StrictConfigParser(ConfigParser):
 
@@ -106,8 +104,6 @@ class StrictConfigParser(ConfigParser):
             return self.getboolean(section, option)
         else:
             raise NotImplementedError()
-
-
 
 def getSection(praser, section):
     area = {}

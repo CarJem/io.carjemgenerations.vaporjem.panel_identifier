@@ -3,11 +3,10 @@ import subprocess
 import json
 import copy
 import argparse
-from configparser import (ConfigParser, MissingSectionHeaderError,
-                          ParsingError, DEFAULTSECT)
 import difflib
 import os
 import ini2json
+from configparser import (ConfigParser, MissingSectionHeaderError, ParsingError, DEFAULTSECT)
 
 used_ids = []
 screen_ids = []
@@ -110,29 +109,14 @@ def copy_panel_settings(old_panel_number, new_panel_number):
         if plasmaview_name.startswith("Panel ") and plasmaview_name.endswith(old_panel_number):
             new_plasmaview = copy.deepcopy(plasmashellrc["PlasmaViews"][plasmaview_name])
             plasmashellrc["PlasmaViews"]["Panel " + panel_number] = new_plasmaview
-    
-def set_appletsrc_screen():
-    global appletsrc
-    global plasmashellrc
-    
-    global used_ids
-    global screen_ids
-    global systemtray_ids
 
-    global panelsToKeep
+def cleanup_panels():
     global panelsToRemove
-
+    global systemtray_ids
     global SystrayPairs
+    global appletsrc
+    global used_ids
 
-    applet_cfg_path = os.path.expanduser('~/.config/plasma-org.kde.plasma.desktop-appletsrc')
-    plasmashellrc_cfg_path = os.path.expanduser('~/.config/plasmashellrc')
-
-    appletsrc = ini2json.read(applet_cfg_path)
-    plasmashellrc = ini2json.read(plasmashellrc_cfg_path)
-
-    collect_appletsrc()
-
-    #Get Rid of Panels that aren't rooted or specific to screens
     for containment_id in panelsToRemove:
         for tray_id in list(systemtray_ids):
             if tray_id in SystrayPairs and SystrayPairs[tray_id] == containment_id:
@@ -140,15 +124,23 @@ def set_appletsrc_screen():
                 systemtray_ids.remove(tray_id)
         appletsrc["Containments"].pop(containment_id)
         used_ids.remove(containment_id)
-        
 
-    #Remove Orphaned SystemTrays
+def remove_orphaned_system_trays():
+    global systemtray_ids
+    global appletsrc
+    global systemtray_ids
+    global SystrayPairs
+    
     for tray_id in list(systemtray_ids):
         if tray_id not in SystrayPairs:
             appletsrc["Containments"].pop(tray_id)
             systemtray_ids.remove(tray_id)
 
-    #create new panels
+def create_clones():
+    global screen_ids
+    global panelsToKeep
+    global appletsrc
+
     for screen_id in screen_ids:
         for old_contaiment_id in panelsToKeep:
             containment = panelsToKeep[old_contaiment_id]
@@ -159,7 +151,21 @@ def set_appletsrc_screen():
                 containment_id = get_new_applet_container_ids()
                 appletsrc["Containments"][containment_id] = create_new_panel_from_clone(new_containment, screen_id)
                 copy_panel_settings(old_contaiment_id, containment_id)
+    
+def set_appletsrc_screen():
+    global appletsrc
+    global plasmashellrc
+    
+    applet_cfg_path = os.path.expanduser('~/.config/plasma-org.kde.plasma.desktop-appletsrc')
+    plasmashellrc_cfg_path = os.path.expanduser('~/.config/plasmashellrc')
 
+    appletsrc = ini2json.read(applet_cfg_path)
+    plasmashellrc = ini2json.read(plasmashellrc_cfg_path)
+
+    collect_appletsrc() # Gather appletsrc data
+    cleanup_panels() # Get rid of panels that aren't rooted or specific to screens
+    remove_orphaned_system_trays() # Remove orphaned system trays
+    create_clones() # Create panel clones
 
     ini2json.write(appletsrc, applet_cfg_path)
     ini2json.write(plasmashellrc, plasmashellrc_cfg_path)
